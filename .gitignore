@@ -1,0 +1,6 @@
+*.tar.gz
+*./src/node_modules
+.vscode
+log
+data
+localscript.js
