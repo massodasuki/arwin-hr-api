@@ -19,13 +19,30 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 var isProduction = process.env.NODE_ENV === 'production';
+console.log("Env :", isProduction);
 
 
 // Monggose
 if(isProduction){
-  mongoose.connect(process.env.MONGODB_URI);
+  // mongoose.connect(process.env.MONGODB_URI);
+  
+  mongoose.connect('mongodb+srv://admin:jN4H5rKLF573m0vT@cluster0.jdvdd.mongodb.net/stagin?retryWrites=true&w=majority', {
+    useNewUrlParser: true
+  });
+
 } else {
-  mongoose.connect('mongodb://localhost/conduit');
+  // const stage_uri = 'mongodb+srv://admin:#$%%mars@cluster0.jdvdd.mongodb.net/stagin?retryWrites=true&w=majority';
+
+  // mongoose.connect(stage_uri, {
+  //   useNewUrlParser: true
+  // });
+
+  mongoose.connect('mongodb+srv://admin:jN4H5rKLF573m0vT@cluster0.jdvdd.mongodb.net/stagin?retryWrites=true&w=majority', {
+    useNewUrlParser: true
+  });
+
+
+  // mongoose.connect('mongodb://localhost/conduit');
   mongoose.set('debug', true);
 }
 
