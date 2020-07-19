@@ -8,40 +8,63 @@ var mongoose = require('mongoose');
 var jwt = require('jsonwebtoken');
 var bcrypt = require('bcryptjs');
 
+
+
+function validateEmailAccessibility(email){
+    return User.findOne({email: email}).then(function(result){
+         return result !== null;
+    });
+}
+
+
 function registerUser(data)
 {   
     return new Promise(function(resolve, reject){
         
         var hashedPassword = bcrypt.hashSync(data.password, 8);
 
-        var user = new User({
-            _id: new mongoose.Types.ObjectId(),
-            age: data.name,
-            name : data.name,
-            email : data.email,
-            password : hashedPassword    
-        });
-    
-        user.save(function(err) {
-            if (err)  {
-                reject ({
-                    status:500,
-                    msg:"There was a problem registering the user."
+
+        validateEmailAccessibility(email)
+        .then(function(valid) {
+            if (!valid) {
+                reject({
+                    auth: false, 
+                    msg: "Email already used"
                 })
             }
+        }).then(function (status){
 
-
-        var token = jwt.sign(
-                { id: user._id }, 
-                config.secret, 
-                { expiresIn: 86400 // expires in 24 hours
-            });
+                var user = new User({
+                    _id: new mongoose.Types.ObjectId(),
+                    age: data.name,
+                    name : data.name,
+                    email : data.email,
+                    password : hashedPassword    
+                });
             
-            resolve({
-                auth: true, 
-                token: token
-            })
+                user.save(function(err) {
+                    if (err)  {
+                        reject ({
+                            status:500,
+                            msg:"There was a problem registering the user."
+                        })
+                    }
+        
+        
+                var token = jwt.sign(
+                        { id: user._id }, 
+                        config.secret, 
+                        { expiresIn: 86400 // expires in 24 hours
+                    });
+                    
+                    resolve({
+                        auth: true, 
+                        token: token
+                    })
+                });
         });
+
+        
     })
 }
   
@@ -93,7 +116,6 @@ function accessToken()
     })
 }
 
-
-
+ module.exports.validateEmailAccessibility = validateEmailAccessibility;
 module.exports.registerUser = registerUser;
 module.exports.me = me;
