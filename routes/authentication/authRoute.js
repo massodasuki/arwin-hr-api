@@ -12,6 +12,10 @@ router.post('/register', function(req, res, next) {
       });
 });
 
+router.post('/testing', function(req, res, next) {
+    res.status(200).json( { status : 200, data : data } )
+});
+
 router.get('/me', function(req, res, next) {
   var token = null;
   token = req.headers['x-access-token'];
