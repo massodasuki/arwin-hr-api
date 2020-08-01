@@ -9,6 +9,10 @@ router.post('/register', function(req, res, next) {
   authController.registerUser(req.body).
       then(function (data) {
           res.status(200).json( { status : 200, data : data } )
+      })
+      .catch(function (err){
+        console.log(err);
+          res.status(401).json( { status : 401, err : err } )
       });
 });
 

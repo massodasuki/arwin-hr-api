@@ -11,20 +11,23 @@ var bcrypt = require('bcryptjs');
 
 
 function validateEmailAccessibility(email){
-    return User.findOne({email: email}).then(function(result){
-         return result !== null;
-    });
+    return User.findOne({email: email})
+        .then(function(result){
+            if (result) {
+                return null;
+            }
+            return true;
+        });
 }
 
 
 function registerUser(data)
 {   
     return new Promise(function(resolve, reject){
-        
         var hashedPassword = bcrypt.hashSync(data.password, 8);
 
 
-        validateEmailAccessibility(email)
+        validateEmailAccessibility(data.email)
         .then(function(valid) {
             if (!valid) {
                 reject({
@@ -32,36 +35,47 @@ function registerUser(data)
                     msg: "Email already used"
                 })
             }
+            return valid;
+        })
+        .catch(function (error){
+            reject({
+                auth: false, 
+                msg: "Unexpected error"
+            })
         }).then(function (status){
 
-                var user = new User({
-                    _id: new mongoose.Types.ObjectId(),
-                    age: data.name,
-                    name : data.name,
-                    email : data.email,
-                    password : hashedPassword    
-                });
-            
-                user.save(function(err) {
-                    if (err)  {
-                        reject ({
-                            status:500,
-                            msg:"There was a problem registering the user."
-                        })
-                    }
-        
-        
-                var token = jwt.sign(
-                        { id: user._id }, 
-                        config.secret, 
-                        { expiresIn: 86400 // expires in 24 hours
+                if (status)
+                {
+                    var user = new User({
+                        _id: new mongoose.Types.ObjectId(),
+                        age: data.name,
+                        name : data.name,
+                        email : data.email,
+                        password : hashedPassword    
                     });
-                    
-                    resolve({
-                        auth: true, 
-                        token: token
-                    })
-                });
+                
+                    user.save(function(err) {
+                        if (err)  {
+                            reject ({
+                                status:500,
+                                msg:"There was a problem registering the user."
+                            })
+                        }
+            
+            
+                    var token = jwt.sign(
+                            { id: user._id }, 
+                            config.secret, 
+                            { expiresIn: 86400 // expires in 24 hours
+                        });
+                        
+                        resolve({
+                            auth: true, 
+                            token: token
+                        })
+                    });
+
+                }
         });
 
         
