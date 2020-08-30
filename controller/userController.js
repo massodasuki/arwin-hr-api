@@ -37,7 +37,7 @@ function getUser()
         
         // TODO : get user data base username
 
-        Biodata.findOne({}, function(error, data) {
+        User.findOne({}, function(error, data) {
             if (data){
                 resolve({status:200, data:data})
             }
@@ -56,7 +56,7 @@ function updateUser()
         
         // TODO : update user field base username
 
-        Biodata.findOne({}, function(error, data) {
+        User.findOne({}, function(error, data) {
             if (data){
                 resolve({status:200, data:data})
             }
@@ -75,7 +75,7 @@ function deleteUser()
         
         // TODO : Delete user base on username
 
-        Biodata.findOne({}, function(error, data) {
+        User.findOne({}, function(error, data) {
             if (data){
                 resolve({status:200, data:data})
             }
